@@ -1,2 +1,2 @@
 # add folder as library
-export PYTHONPATH=$PYTHONPATH:$(pwd)
+export PYTHONPATH=$PYTHONPATH:$(PWD):$(PWD)/main

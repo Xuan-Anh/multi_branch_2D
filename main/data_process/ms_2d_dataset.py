@@ -4,7 +4,7 @@ import pickle
 import os
 import random
 import numpy as np
-
+import config
 class MS2DDataset(Dataset):
     def __init__(self, root_dir, transform=None, input_size = 256, type = 'train'):
         self.root_dir = root_dir
@@ -39,6 +39,9 @@ class MS2DDataset(Dataset):
             raise ValueError('Image size must has high and width equal 256')
         
         data_return = self.concatenate_data(data_return)
+        
+        # expand 1 dim for mask
+        data_return['mask'] = data_return['mask'].unsqueeze(0)
         return  data_return
 
     def convert_size(self, data_return):
@@ -56,6 +59,7 @@ class MS2DDataset(Dataset):
                     data_return[key]  = np.pad(data_return[key]  , ((random_pad_top, self.input_size - h - random_pad_top), (0,0)), 'constant', constant_values = 0)
             
             data_return = {key: torch.from_numpy(data_return[key]) for key in data_return.keys()}
+
         return data_return
         
     def concatenate_data(self, data_return):
@@ -65,7 +69,7 @@ class MS2DDataset(Dataset):
         return  data_return
     
 if __name__ == '__main__':
-    dataset = MS2DDataset(root_dir = '/home/anhnx5/work/multi_branch_2d/data/sample_dataset/train_2d', type = 'train')
+    dataset = MS2DDataset(root_dir = config.TRAIN_PATH, type = 'train')
     dataloader = DataLoader(dataset, batch_size = 1, shuffle = True, num_workers = 1)
     print(' len dataset: ', len(dataset))
     for i, data in enumerate(dataloader):

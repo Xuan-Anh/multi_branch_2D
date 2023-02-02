@@ -26,6 +26,9 @@ AXIS_TO_TAKE = [2, 0, 1]
 ######### TRAIN #########
 # OPT = DotMap({'dataroot': ROOT, 'phase': 'train', 'trainSize': TRAIN_SIZE, 'no_flip': False})
 ROOT = '/home/hnguyen/doc/multi_branch_2D/data/sample_dataset'
-TRAIN_SIZE = 128
+TRAIN_PATH = '/home/anhnx5/work/multi_branch_2d/data/sample_dataset/train_2d'
+TRAIN_SIZE = 256
+
+
 
 
