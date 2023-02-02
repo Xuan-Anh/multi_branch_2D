@@ -75,5 +75,11 @@ if __name__ == '__main__':
     for i, data in enumerate(dataloader):
         print('data: ', data['data'].shape)
         print('mask: ', data['mask'].shape)
+        ok = data['data']
+        max_value = torch.max(ok)
+        min_value = torch.min(ok)
+        print('max_value: ', max_value)
+        print('min_value: ', min_value)
         break
-    
+#  ảnh cần được normalize trước khi padding
+#  ảnh cần được normalize trước khi paddingảnh cần được normalize trước khi padding

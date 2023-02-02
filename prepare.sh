@@ -1,2 +1,3 @@
 # add folder as library
-export PYTHONPATH=$PYTHONPATH:$(PWD):$(PWD)/main
+conda activate tiramisu
+export PYTHONPATH=${PWD}:${PWD}/main:$PYTHONPATH
