@@ -5,7 +5,7 @@ from dotmap import DotMap
 
 # TODO: change the following path based on your dataset
 # PATH_DATASET = os.path.join(os.path.expanduser('~'), 'Documents', 'Datasets', 'sample_dataset')
-PATH_DATASET = '/home/hnguyen/doc/Tiramisu/data/sample_dataset'
+PATH_DATASET = '/home/anhnx5/work/multi_branch_2d/data/sample_dataset'
 
 # We assume the format of file names in this pattern {PREFIX}_{PATIENT-ID}_{TIMEPOINT-ID}_{MODALITY(MASK)}.{SUFFIX}
 # PREFIX: can be any string

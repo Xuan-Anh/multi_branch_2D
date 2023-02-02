@@ -3,6 +3,10 @@ import shutil
 import os
 import json
 import pickle
+import sys
+path_root = '/home/anhnx5/work/multi_branch_2d/' 
+# add path to sys.path
+sys.path.append(path_root)
 from main import config
 
 target_train_2d = os.path.join(config.PATH_DATASET, 'train_2d')
@@ -38,13 +42,22 @@ for patient_index in ids_json:
         mask_2 = nib.load(mask_2_path).get_fdata()
         
         for slice in range(modalities_t1.shape[2]):
-            pkl_save = {'t1': modalities_t1[:,:,slice], 't2': modalities_t2[:,:,slice], \
-                'flair': modalities_flair[:,:,slice], 'pd': modalities_pd[:,:,slice], 'mask1': mask_1[:,:,slice], 'mask2': mask_2[:,:,slice]}
-            pkl_name = 'slice_' + str(count_slice) + '.pkl'
+            pkl_save_1 = {'t1': modalities_t1[:,:,slice], 't2': modalities_t2[:,:,slice], \
+                'flair': modalities_flair[:,:,slice], 'pd': modalities_pd[:,:,slice], 'mask': mask_1[:,:,slice]} 
+            
+            pkl_name_1 = 'slice_1_' + str(count_slice) + '.pkl'
             
             # save pkl file
-            target_path = os.path.join(target_train_2d, pkl_name)
+            target_path = os.path.join(target_train_2d, pkl_name_1)
             with open(target_path, 'wb') as f:
-                pickle.dump(pkl_save, f)
+                pickle.dump(pkl_save_1, f)
+            
+            pkl_save_2 = {'t1': modalities_t1[:,:,slice], 't2': modalities_t2[:,:,slice], \
+                'flair': modalities_flair[:,:,slice], 'pd': modalities_pd[:,:,slice], 'mask': mask_2[:,:,slice]}
+            pkl_name_2 = 'slice_2_' + str(count_slice) + '.pkl'
+
+            # save pkl file
+            target_path = os.path.join(target_train_2d, pkl_name_2)
+            with open(target_path, 'wb') as f:
+                pickle.dump(pkl_save_2, f)
             count_slice += 1
-                 
