@@ -67,7 +67,7 @@ class MS2DDataset(Dataset):
         mask = data_return['mask']
         data_return = {'data': data, 'mask': mask}
         return  data_return
-    
+      
 if __name__ == '__main__':
     dataset = MS2DDataset(root_dir = config.TRAIN_PATH, type = 'train')
     dataloader = DataLoader(dataset, batch_size = 1, shuffle = True, num_workers = 1)
@@ -78,8 +78,13 @@ if __name__ == '__main__':
         ok = data['data']
         max_value = torch.max(ok)
         min_value = torch.min(ok)
+        mean_value = torch.mean(ok)
         print('max_value: ', max_value)
         print('min_value: ', min_value)
+        print('mean_value: ', mean_value)
+        # plot distribution value of ok 
+        # plt.hist(ok.numpy().flatten(), bins = 100)
+        # plt.show()
         break
 #  ảnh cần được normalize trước khi padding
 #  ảnh cần được normalize trước khi paddingảnh cần được normalize trước khi padding

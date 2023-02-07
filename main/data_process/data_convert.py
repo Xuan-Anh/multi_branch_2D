@@ -65,6 +65,5 @@ def get_properties():
 
 if __name__ == '__main__':
     assert os.path.exists(PATH_DATASET)
-
     dic_ids = get_ids()
     dic_properties = get_properties()
