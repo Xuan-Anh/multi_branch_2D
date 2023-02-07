@@ -16,6 +16,9 @@ class DS_Block(nn.Module):
         x = self.conv2(x)
         x_pool = self.maxpool(x)
         x_skip = x
+        print('[INFO] DS_Block: ')
+        print('------ x_skip: ', x_skip.shape)
+        print('------ x_pool: ', x_pool.shape)
         return x_skip, x_pool
 
 class Bottom_Block(nn.Module):
@@ -52,9 +55,9 @@ class MMFF_Block(nn.Module):
         self.bn2_3 = nn.BatchNorm2d(out_filters)
         
         # 3x3 conv
-        self.conv2_1 = nn.Conv2d(out_filters, out_filters, 3, padding = 1)
-        self.conv2_2 = nn.Conv2d(out_filters, out_filters, 3, padding = 1)
-        self.conv2_3 = nn.Conv2d(out_filters, out_filters, 3, padding = 1)
+        self.conv2_1 = nn.Conv2d(out_filters, out_filters, kernel_size= 3)
+        self.conv2_2 = nn.Conv2d(out_filters, out_filters, kernel_size= 3)
+        self.conv2_3 = nn.Conv2d(out_filters, out_filters, kernel_size= 3)
         
     def forward(self, x_skip_1, x_skip_2, x_skip_3):
         
@@ -95,10 +98,9 @@ class MSFU_Block(nn.Module):
         self.conv1 = nn.Conv2d(in_filters, out_filters, kernel_size = 1)
         # 2x2 upsample
         # self.upsample = nn.Upsample(scale_factor = 2, mode = 'bilinear', align_corners = True)
-        
         # 2x2 conv2Dtranspose
         self.upsample = nn.ConvTranspose2d(out_filters, out_filters, kernel_size = 2, stride = 2)
-        
+        self.sigmoid = nn.Sigmoid()
         # CONCATENATE
         # after concate
         self.bn2 = nn.BatchNorm2d(out_filters*2)        
@@ -119,6 +121,7 @@ class MSFU_Block(nn.Module):
         print('[COUNTER]  counter  = ', counter)
         x_low = self.bn1(x_low)
         x_low = self.conv1(x_low)
+        x_low = self.sigmoid(x_low)
         x_low = self.upsample(x_low)
         
         print('[SHAPE] x_low after: ', x_low.shape)
@@ -150,14 +153,14 @@ class MultiBranch2DNet(nn.Module):
         # use setattr to create new variables
         # init input
         print('[CHECK] x_1.shape', x_1.shape)
-        setattr(self, 'x_ds_1_0_skip', x_1)
-        setattr(self, 'x_ds_2_0_skip', x_2)
-        setattr(self, 'x_ds_3_0_skip', x_3)
+        setattr(self, 'x_ds_1_0_pool', x_1)
+        setattr(self, 'x_ds_2_0_pool', x_2)
+        setattr(self, 'x_ds_3_0_pool', x_3)
         
         # pass through DS blocks                
         for i in [1, 2, 3]:
             for j in range(self.len_ds_list):
-                output_ds = self.DS_list_1[j](getattr(self, f'x_ds_{i}_{j}_skip'))
+                output_ds = self.DS_list_1[j](getattr(self, f'x_ds_{i}_{j}_pool'))
                 setattr(self, f'x_ds_{i}_{j+1}_skip', output_ds[0])
                 setattr(self, f'x_ds_{i}_{j+1}_pool', output_ds[1])
         print('[DONE] DS blocks') 
@@ -168,7 +171,7 @@ class MultiBranch2DNet(nn.Module):
         print('[DONE] BTM blocks')        
         
         setattr(self, 'x_mmff_5', self.MMFF_list[self.len_ds_list](x_btm_1, x_btm_2, x_btm_3))
-        for i in reversed(range(self.len_ds_list)):
+        for i in range(self.len_ds_list):
             setattr(self, 'x_mmff_' + str(i+1), self.MMFF_list[i](
                                     getattr(self, 'x_ds_1_'+str(i+1) + '_skip'), \
                                     getattr(self, 'x_ds_2_'+str(i+1) + '_skip'), \
@@ -193,10 +196,11 @@ class MultiBranch2DNet(nn.Module):
         
         x = getattr(self, 'x_msfu_1')
         return x 
-    
-x_1 = torch.randn(12, 1, 256, 256)
-x_2 = torch.randn(12, 1, 256, 256)
-x_3 = torch.randn(12, 1, 256, 256)
+
+IMG_SIZE = 256
+x_1 = torch.randn(12, 1, IMG_SIZE, IMG_SIZE)
+x_2 = torch.randn(12, 1, IMG_SIZE, IMG_SIZE)
+x_3 = torch.randn(12, 1, IMG_SIZE, IMG_SIZE)
 
 model_branch_2d = MultiBranch2DNet()
 model_branch_2d(x_1, x_2, x_3)
